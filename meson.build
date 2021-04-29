@@ -6,7 +6,7 @@ include = include_directories (
 
 glad = static_library (
 	'glad', 'vendor/glad/glad.c',
-	include_directories: 'vendor/glad/include/'
+	include_directories: ['vendor/glad/include/', 'vendor/KHR/include/']
 )
 
 glad_dep =  declare_dependency (
@@ -16,6 +16,6 @@ glad_dep =  declare_dependency (
 
 exe = executable (
 	'exe', ['src/main.c', 'src/assets.c'],
-	include_directories:include,
-	dependencies:[glad_dep, dependency('SDL2')]
+	include_directories:[include],
+	dependencies:[glad_dep, dependency('SDL2'), dependency('cglm')]
 )

@@ -39,6 +39,7 @@
 # Build system folders
 bin/
 build/
+builddir/
 
 # Debug files
 *.dSYM/

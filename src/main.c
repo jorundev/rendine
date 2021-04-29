@@ -12,6 +12,7 @@ typedef
 struct data_s {
 	SDL_Window		*window;
 	SDL_GLContext	*gl;
+	assethdnl_t		texture;
 }	data_t;
 
 bool init(unsigned int width, unsigned int height, data_t *data)
@@ -43,25 +44,36 @@ bool init(unsigned int width, unsigned int height, data_t *data)
 	return true;
 }
 
+
+void	close(data_t *data)
+{
+	asset_release_all();
+	SDL_DestroyWindow(data->window);
+	SDL_Quit();
+	exit(0);
+}
+
+
 void loop(data_t *data)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	assethdnl_t	handle;
-
-	handle = asset_new(ASSET_TYPE_TEXTURE);
-	asset_load_from_file(handle, "res/texture.png");
-
 	SDL_Event event;
-	while(SDL_PollEvent(&event))
-	{
-		switch(event.type)
-		{
+	while(SDL_PollEvent(&event)) {
+		switch(event.type) {
 			case SDL_KEYUP:
 				if(event.key.keysym.sym == SDLK_ESCAPE)
-					asset_release_all();
-					exit(0);
+					close(data);
 				break;
+			case SDL_WINDOWEVENT:
+				switch (event.window.event) {
+            		case SDL_WINDOWEVENT_CLOSE:   // exit game
+                		close(data);
+                		break;
+            		default:
+                		break;
+       			 }
+        		break;
 		}
 	}
 }
@@ -72,6 +84,9 @@ bool run(void)
 
 	if (!init(800, 600, &data))
 		return true;
+
+	data.texture = asset_new(ASSET_TYPE_TEXTURE);
+	asset_load_from_file(data.texture, "res/texture.png");
 
 	glClearColor(1.f, .0f, .0f, 1.f);
 	while (true) {
