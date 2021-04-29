@@ -83,10 +83,13 @@ bool run(void)
 	data_t	data;
 
 	if (!init(800, 600, &data))
-		return true;
+		return false;
 
 	data.texture = asset_new(ASSET_TYPE_TEXTURE);
-	asset_load_from_file(data.texture, "res/texture.png");
+	if (!asset_load_from_file(data.texture, "res/texture.png")) {
+		printf("[%s] ERROR: %s\n", asset_get_error_function(), asset_get_error());
+		return false;
+	}
 
 	glClearColor(1.f, .0f, .0f, 1.f);
 	while (true) {
@@ -94,10 +97,12 @@ bool run(void)
 		SDL_GL_SwapWindow(data.window);
 	}
 
-	return false;
+	return true;
 }
 
 int main(void)
 {
-	return run() ? EXIT_FAILURE : EXIT_SUCCESS;
+	bool ret = run();
+	asset_release_all();
+	return ret ? EXIT_SUCCESS : EXIT_FAILURE;
 }

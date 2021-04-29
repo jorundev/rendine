@@ -5,6 +5,9 @@
 
 #define MAX_ASSET_NUMBER 1024
 
+const char *asset_get_error(void);
+const char *asset_get_error_function(void);
+
 typedef
 /*!
  *	\brief Represents the type of an asset.

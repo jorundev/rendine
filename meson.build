@@ -15,7 +15,7 @@ glad_dep =  declare_dependency (
 )
 
 exe = executable (
-	'exe', ['src/main.c', 'src/assets.c'],
+	'exe', ['src/main.c', 'src/assets.c', 'src/texture.c'],
 	include_directories:[include],
-	dependencies:[glad_dep, dependency('SDL2'), dependency('cglm')]
+	dependencies:[glad_dep, dependency('SDL2'), dependency('cglm'), dependency('libpng')]
 )
