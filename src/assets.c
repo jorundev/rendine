@@ -2,6 +2,7 @@
 #include <string.h>
 #include "assets.h"
 #include "texture.h"
+#include "shader.h"
 
 typedef
 struct asset_s {
@@ -45,6 +46,10 @@ assethdnl_t asset_new(asset_type_t type)
 			ret->data = malloc(sizeof(texture_t));
 			memset(ret->data, 0, sizeof(texture_t));
 			break ;
+		case ASSET_TYPE_SHADER:
+			ret->data = malloc(sizeof(shader_t));
+			memset(ret->data, 0, sizeof(shader_t));
+			break ;
 		default:
 			ret->data = NULL;
 			break ;
@@ -63,6 +68,16 @@ void asset_release(assethdnl_t asset)
 		switch (asset->type) {
 			case ASSET_TYPE_TEXTURE:
 				free(((texture_t *)asset->data)->raw);
+				glDeleteTextures(1, &((texture_t *)asset->data)->gl_obj);
+				break ;
+			case ASSET_TYPE_SHADER:
+				free((void *)((shader_t *)asset->data)->shader_source);
+				for (int i = 0; i < ((shader_t *)asset->data)->num_uniforms; ++i) {
+					free(((shader_t *)asset->data)->uniform_names[i]);
+				}
+				free(((shader_t *)asset->data)->uniform_names);
+				free(((shader_t *)asset->data)->uniform_types);
+				break ;
 			default:
 				break ;
 		}
@@ -87,6 +102,13 @@ bool asset_load_from_file(assethdnl_t asset, const char *filename)
 				return false;
 			}
 			break ;
+		case ASSET_TYPE_SHADER:
+			if (!shader_load_from_spirv_file((shader_t *)asset->data, filename)) {
+				g_asset_error = shader_get_error();
+				g_asset_error_function = shader_get_error_function();
+				return false;
+			}
+			break ;
 		default:
 			break ;
 	}
@@ -98,4 +120,14 @@ void asset_release_all(void)
 	for (int i = 0; i < last_used_asset; ++i) {
 		asset_release(&asset_pool[i]);
 	}
+}
+
+const char *asset_shader_get_glsl_source(assethdnl_t asset)
+{
+	if (asset->type == ASSET_TYPE_SHADER) {
+		return ((shader_t *)asset->data)->shader_source;
+	}
+	g_asset_error = "Asset is not a shader";
+	g_asset_error_function = "asset_shader_get_glsl_source";
+	return 0;
 }

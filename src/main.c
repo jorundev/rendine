@@ -13,6 +13,9 @@ struct data_s {
 	SDL_Window		*window;
 	SDL_GLContext	*gl;
 	assethdnl_t		texture;
+	assethdnl_t		shader;
+
+	GLuint VBO;
 }	data_t;
 
 bool init(unsigned int width, unsigned int height, data_t *data)
@@ -48,16 +51,20 @@ bool init(unsigned int width, unsigned int height, data_t *data)
 void	close(data_t *data)
 {
 	asset_release_all();
+	SDL_GL_DeleteContext(data->gl);
 	SDL_DestroyWindow(data->window);
 	SDL_Quit();
 	exit(0);
 }
 
+float vertices[] = {
+	-0.5f, -0.5f, 0.0f,
+     0.5f, -0.5f, 0.0f,
+     0.0f,  0.5f, 0.0f
+};
 
 void loop(data_t *data)
 {
-	glClear(GL_COLOR_BUFFER_BIT);
-
 	SDL_Event event;
 	while(SDL_PollEvent(&event)) {
 		switch(event.type) {
@@ -76,20 +83,31 @@ void loop(data_t *data)
         		break;
 		}
 	}
+
+	glClear(GL_COLOR_BUFFER_BIT);
+
 }
 
-bool run(void)
+void run(void)
 {
 	data_t	data;
 
 	if (!init(800, 600, &data))
-		return false;
+		return ;
 
 	data.texture = asset_new(ASSET_TYPE_TEXTURE);
-	if (!asset_load_from_file(data.texture, "res/texture.png")) {
+	if (!asset_load_from_file(data.texture, "res/tex/texture.png")) {
 		printf("[%s] ERROR: %s\n", asset_get_error_function(), asset_get_error());
-		return false;
+		return ;
 	}
+
+	data.shader = asset_new(ASSET_TYPE_SHADER);
+	if (!asset_load_from_file(data.shader, "res/shaders/fragment.spv")) {
+		printf("[%s] ERROR: %s\n", asset_get_error_function(), asset_get_error());
+		return ;
+	}
+
+	printf("%s\n", asset_shader_get_glsl_source(data.shader));
 
 	glClearColor(1.f, .0f, .0f, 1.f);
 	while (true) {
@@ -97,12 +115,11 @@ bool run(void)
 		SDL_GL_SwapWindow(data.window);
 	}
 
-	return true;
+	close(&data);
 }
 
 int main(void)
 {
-	bool ret = run();
-	asset_release_all();
-	return ret ? EXIT_SUCCESS : EXIT_FAILURE;
+	run();
+	return 0;
 }

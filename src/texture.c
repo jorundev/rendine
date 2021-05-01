@@ -171,14 +171,12 @@ bool texture_png_load_from_file(texture_t *tex, const char *filename)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	fclose(fp);
-	png_destroy_read_struct(&png_ptr,
-			(png_infopp)NULL, (png_infopp)NULL);
+	png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 	free(row_pointers);
 	return true;
 
 	error:	fclose(fp);
-			png_destroy_read_struct(&png_ptr,
-				(png_infopp)NULL, (png_infopp)NULL);
+			png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 			g_png_error_function = "texture_png_load_from_file";
 			return false;
 }

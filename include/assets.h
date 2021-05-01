@@ -106,3 +106,9 @@ void asset_release_all(void);
  *  \param type type of the asset
  */
 void asset_set_type(assethdnl_t asset, asset_type_t type);
+
+/*! \brief If the asset is a shader, returns the GLSL source code
+ *
+ *  \param asset an asset handle
+ */
+const char *asset_shader_get_glsl_source(assethdnl_t asset);
