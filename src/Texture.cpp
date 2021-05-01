@@ -44,7 +44,7 @@ Result<void, const char *> Texture::loadFromFile(const char *filename)
 	unsigned char	sig[16] = {0};
 
 	if (!fp) {
-		return Err( (const char *)strerror(errno) );
+		return Err( (const char *)std::strerror(errno) );
 	}
 
 	fread(sig, 1, 8, fp);

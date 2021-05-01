@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include <rendine/Texture.hpp>
+#include <rendine/Shader.hpp>
 #include <rendine/utils/Log.hpp>
 
 class Program {
@@ -45,6 +46,24 @@ public:
 			return ;
 		}
 		LOG_INFO("Loaded texture '" << file << '\'');
+
+		file = "res/shaders/vertex.spv";
+		auto status2 = this->vert_shader.loadFromFile(file, rendine::ShaderStage::Vertex);
+		if (status2.isErr()) {
+			/* Error while loading texture */
+			LOG_ERR('\'' << file << "' -> " << status2.unwrapErr());
+			return ;
+		}
+		LOG_INFO("Loaded shader '" << file << '\'');
+
+		file = "res/shaders/fragment.spv";
+		auto status3 = this->frag_shader.loadFromFile(file, rendine::ShaderStage::Fragment);
+		if (status3.isErr()) {
+			/* Error while loading texture */
+			LOG_ERR('\'' << file << "' -> " << status3.unwrapErr());
+			return ;
+		}
+		LOG_INFO("Loaded shader '" << file << '\'');
 
 		LOG_INFO("Successfully initialized engine");
 		this->is_valid = true;
@@ -103,12 +122,8 @@ private:
 	SDL_Window			*window;
 	SDL_GLContext		gl;
 	rendine::Texture	texture;
-};
-
-float vertices[] = {
-	-0.5f, -0.5f, 0.0f,
-     0.5f, -0.5f, 0.0f,
-     0.0f,  0.5f, 0.0f
+	rendine::Shader		frag_shader;
+	rendine::Shader		vert_shader;
 };
 
 int main(void)

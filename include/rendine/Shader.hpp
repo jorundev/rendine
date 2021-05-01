@@ -2,6 +2,8 @@
 
 #include "Asset.hpp"
 #include "GLObject.hpp"
+#include "utils/Result.hpp"
+#include <glad/glad.h>
 
 #include <vector>
 #include <string>
@@ -9,12 +11,11 @@
 namespace rendine {
 
 enum class ShaderStage {
-	Unknown,
-	Geometry,
-	Vertex,
-	Fragment,
-	Tesselation,
-	Compute,
+	Unknown = -1,
+	Geometry = GL_GEOMETRY_SHADER,
+	Vertex = GL_VERTEX_SHADER,
+	Fragment = GL_FRAGMENT_SHADER,
+	Compute = GL_COMPUTE_SHADER,
 };
 
 enum class ShaderVarType {
@@ -63,11 +64,17 @@ public:
 	~Shader() override;
 
 	virtual void	unload() override;
+	Result<void, const char *> loadFromFile(const char *filename, ShaderStage stage);
+
+	const std::vector<ShaderUniform>& getUniforms() const { return this->material_uniforms; }
+
 private:
 	std::string					name;
 	ShaderStage					stage;
-	unsigned char				*glsl_source;
+	char						*glsl_source;
 	std::vector<ShaderUniform>	material_uniforms;
+
+	Result<void, const char *>	compile_source();
 };
 
 }
