@@ -9,7 +9,7 @@ Texture::~Texture()
 
 void Texture::unload()
 {
-	if (this;is_loaded) {
+	if (this->is_loaded) {
 		free(this->raw);
 		this->bit_depth = 0;
 		this->color_type = TextureColorType::Unknown;
