@@ -44,6 +44,7 @@ public:
 			LOG_ERR('\'' << file << "' -> " << status.unwrapErr());
 			return ;
 		}
+		LOG_INFO("Loaded texture '" << file << '\'');
 
 		LOG_INFO("Successfully initialized engine");
 		this->is_valid = true;
