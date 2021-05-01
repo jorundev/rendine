@@ -9,7 +9,15 @@ Texture::~Texture()
 
 void Texture::unload()
 {
-	this->is_loaded = false;
+	if (this;is_loaded) {
+		free(this->raw);
+		this->bit_depth = 0;
+		this->color_type = TextureColorType::Unknown;
+		this->width = 0;
+		this->height = 0;
+		this->is_loaded = false;
+		glDeleteTextures(1, this->getHandlePtr());
+	}
 }
 
 static Result<void, const char *> check_png_signature(unsigned char *signature)
@@ -136,6 +144,7 @@ Result<void, const char *> Texture::loadFromFile(const char *filename)
 	png_bytepp row_pointers = (png_bytepp)malloc(this->height * sizeof(png_bytep));
 	if (!rowbytes) {
 		fclose(fp);
+		free(this->raw);
 		png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 		return Err( "Not enough RAM" );
 	}
@@ -145,6 +154,7 @@ Result<void, const char *> Texture::loadFromFile(const char *filename)
 	}
 
 	png_read_image(png_ptr, row_pointers);
+	free(row_pointers);
 
 	int alpha;
 
@@ -157,6 +167,7 @@ Result<void, const char *> Texture::loadFromFile(const char *filename)
 			break ;
 		default:
 			fclose(fp);
+			free(this->raw);
 			png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 			return Err( "Unsupported color format" );
 			break ;
@@ -174,7 +185,7 @@ Result<void, const char *> Texture::loadFromFile(const char *filename)
 
 	fclose(fp);
 	png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
-	free(row_pointers);
+	this->is_loaded = true;
 	return Ok();
 }
 
