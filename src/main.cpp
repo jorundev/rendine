@@ -35,6 +35,8 @@ public:
 			return ;
 		}
 
+		LOG_INFO("Successfully created OpenGL context");
+
 		auto file = "res/tex/texture.png";
 		auto status = this->texture.loadFromFile(file);
 		if (status.isErr()) {
@@ -42,19 +44,22 @@ public:
 			LOG_ERR('\'' << file << "' -> " << status.unwrapErr());
 			return ;
 		}
+
+		LOG_INFO("Successfully initialized engine");
 		this->is_valid = true;
 	}
 
 	int	run()
 	{
 		if (!this->is_valid) {
-			std::cerr << "Program exited because of runtime error" << std::endl;
+			LOG_EXIT("Program exited because of runtime error");
 			return (-1);
 		}
 
 		glClearColor(1.f, .0f, .0f, 1.f);
 		while (true) {
 			if (!this->loop()) {
+				LOG_INFO("Exiting program (Exit event)");
 				break ;
 			}
 			SDL_GL_SwapWindow(this->window);
@@ -107,6 +112,7 @@ float vertices[] = {
 
 int main(void)
 {
+	LOG_INFO("Launching Rendine version " << RENDINE_VERSION_STRING());
 	Program	program(800, 600, "OpenGL");
 	return program.run();
 }

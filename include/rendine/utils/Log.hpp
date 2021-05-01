@@ -1,7 +1,10 @@
 #pragma once
 
 #include <iostream>
+#include <chrono>
+#include <iomanip>
 #include "ANSIColorText.hpp"
+#include "../Info.hpp"
 
 constexpr const char* str_end(const char *str)
 {
@@ -24,12 +27,40 @@ constexpr const char* file_name(const char* str)
 
 #define LOG_ERR(err) \
 { \
-	constexpr const char *const_file = file_name(__FILE__); \
-	std::cerr << ANSI_RED "Error" ANSI_RESET ":   [" << ANSI_MAGENTA << const_file << ANSI_RESET << ':' << ANSI_CYAN << __LINE__ << ANSI_RESET << "] " << err << std::endl; \
+	constexpr const char *__const_file = file_name(__FILE__); \
+	time_t __time_now = time(nullptr); \
+	std::cerr	<< std::put_time(localtime(&__time_now), "%d/%m/%y %T ") \
+				<< std::right << std::setw(10) << __const_file  << ':' << std::left << std::setw(4) << __LINE__ \
+				<< ANSI_RED << std::left << std::setw(5) << "ERROR" << ANSI_RESET << " " \
+				<< err << std::endl; \
 }
 
 #define LOG_WARN(err) \
 { \
-	constexpr const char *const_file = file_name(__FILE__); \
-	std::cout << ANSI_YELLOW "Warning" ANSI_RESET ": [" << ANSI_MAGENTA << const_file << ANSI_RESET << ':' << ANSI_CYAN << __LINE__ << ANSI_RESET << "] " << err << std::endl; \
+	constexpr const char *__const_file = file_name(__FILE__); \
+	time_t __time_now = time(nullptr); \
+	std::cout	<< std::put_time(localtime(&__time_now), "%d/%m/%y %T ") \
+				<< std::right << std::setw(10) << __const_file  << ':' << std::left << std::setw(4) << __LINE__ \
+				<< ANSI_YELLOW << std::left << std::setw(5) << "WARN" << ANSI_RESET << " " \
+				<< err << std::endl; \
+}
+
+#define LOG_INFO(err) \
+{ \
+	constexpr const char *__const_file = file_name(__FILE__); \
+	time_t __time_now = time(nullptr); \
+	std::cout	<< std::put_time(localtime(&__time_now), "%d/%m/%y %T ") \
+				<< std::right << std::setw(10) << __const_file  << ':' << std::left << std::setw(4) << __LINE__ \
+				<< ANSI_CYAN << std::left << std::setw(5) << "INFO" << ANSI_RESET << " " \
+				<< err << std::endl; \
+}
+
+#define LOG_EXIT(err) \
+{ \
+	constexpr const char *__const_file = file_name(__FILE__); \
+	time_t __time_now = time(nullptr); \
+	std::cerr	<< std::put_time(localtime(&__time_now), "%d/%m/%y %T ") \
+				<< std::right << std::setw(10) << __const_file  << ':' << std::left << std::setw(4) << __LINE__ \
+				<< ANSI_BOLDRED << std::left << std::setw(5) << "EXIT" << ANSI_RESET << " " \
+				<< err << std::endl; \
 }
