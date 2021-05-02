@@ -30,7 +30,7 @@ constexpr const char* file_name(const char* str)
 	constexpr const char *__const_file = file_name(__FILE__); \
 	time_t __time_now = time(nullptr); \
 	std::cerr	<< std::put_time(localtime(&__time_now), "%d/%m/%y %T ") \
-				<< std::right << std::setw(10) << __const_file  << ':' << std::left << std::setw(4) << __LINE__ \
+				<< std::right << std::setw(16) << __const_file  << ':' << std::left << std::setw(4) << __LINE__ \
 				<< ANSI_RED << std::left << std::setw(5) << "ERROR" << ANSI_RESET << " " \
 				<< err << std::endl; \
 }
@@ -40,7 +40,7 @@ constexpr const char* file_name(const char* str)
 	constexpr const char *__const_file = file_name(__FILE__); \
 	time_t __time_now = time(nullptr); \
 	std::cout	<< std::put_time(localtime(&__time_now), "%d/%m/%y %T ") \
-				<< std::right << std::setw(10) << __const_file  << ':' << std::left << std::setw(4) << __LINE__ \
+				<< std::right << std::setw(16) << __const_file  << ':' << std::left << std::setw(4) << __LINE__ \
 				<< ANSI_YELLOW << std::left << std::setw(5) << "WARN" << ANSI_RESET << " " \
 				<< err << std::endl; \
 }
@@ -50,7 +50,7 @@ constexpr const char* file_name(const char* str)
 	constexpr const char *__const_file = file_name(__FILE__); \
 	time_t __time_now = time(nullptr); \
 	std::cout	<< std::put_time(localtime(&__time_now), "%d/%m/%y %T ") \
-				<< std::right << std::setw(10) << __const_file  << ':' << std::left << std::setw(4) << __LINE__ \
+				<< std::right << std::setw(16) << __const_file  << ':' << std::left << std::setw(4) << __LINE__ \
 				<< ANSI_CYAN << std::left << std::setw(5) << "INFO" << ANSI_RESET << " " \
 				<< err << std::endl; \
 }
@@ -60,7 +60,7 @@ constexpr const char* file_name(const char* str)
 	constexpr const char *__const_file = file_name(__FILE__); \
 	time_t __time_now = time(nullptr); \
 	std::cerr	<< std::put_time(localtime(&__time_now), "%d/%m/%y %T ") \
-				<< std::right << std::setw(10) << __const_file  << ':' << std::left << std::setw(4) << __LINE__ \
+				<< std::right << std::setw(16) << __const_file  << ':' << std::left << std::setw(4) << __LINE__ \
 				<< ANSI_BOLDRED << std::left << std::setw(5) << "EXIT" << ANSI_RESET << " " \
 				<< err << std::endl; \
 }

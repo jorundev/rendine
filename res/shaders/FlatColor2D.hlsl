@@ -3,7 +3,7 @@ struct VertexIn {
 };
 
 struct VertexOut {
-	float2 position : POSITION;
+	float4 position : SV_Position;
 };
 
 cbuffer Material {
@@ -12,12 +12,12 @@ cbuffer Material {
 
 float4 PSMain(VertexOut input) : SV_TARGET
 {
-	return color;
+	return float4(input.position.xyz, 1.0);
 }
 
 VertexOut VSMain(VertexIn input)
 {
 	VertexOut output;
-	output.position = input.position;
+	output.position = float4(input.position, 0.0, 1.0);
 	return output;
 }

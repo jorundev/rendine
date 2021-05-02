@@ -136,11 +136,42 @@ Result<void, const char *> Shader::loadFromFile(const char *filename, ShaderStag
 		}
 	}
 
+	spvc_resources_get_resource_list_for_type(resources, SPVC_RESOURCE_TYPE_STAGE_INPUT, &list, &count);
+	for (i = 0; i < count; i++)
+	{
+		if (stage == ShaderStage::Fragment) {
+			std::string new_name = "vertOutput";
+			new_name += std::to_string(i);
+			spvc_compiler_set_name(compiler_glsl, list[i].id, new_name.c_str());
+		}
+		if (stage == ShaderStage::Vertex) {
+			std::string new_name = "vertInput";
+			new_name += std::to_string(i);
+			spvc_compiler_set_name(compiler_glsl, list[i].id, new_name.c_str());
+		}
+	}
+
+	spvc_resources_get_resource_list_for_type(resources, SPVC_RESOURCE_TYPE_STAGE_OUTPUT, &list, &count);
+	for (i = 0; i < count; i++)
+	{
+		if (stage == ShaderStage::Fragment) {
+			std::string new_name = "fragOut";
+			new_name += std::to_string(i);
+			spvc_compiler_set_name(compiler_glsl, list[i].id, new_name.c_str());
+		}
+		if (stage == ShaderStage::Vertex) {
+			std::string new_name = "vertOutput";
+			new_name += std::to_string(i);
+			spvc_compiler_set_name(compiler_glsl, list[i].id, new_name.c_str());
+		}
+	}
+
 	spvc_compiler_create_compiler_options(compiler_glsl, &options);
 	spvc_compiler_options_set_uint(options, SPVC_COMPILER_OPTION_GLSL_VERSION, 410);
 	spvc_compiler_options_set_bool(options, SPVC_COMPILER_OPTION_GLSL_ES, SPVC_FALSE);
 	spvc_compiler_options_set_bool(options, SPVC_COMPILER_OPTION_GLSL_ENABLE_420PACK_EXTENSION, SPVC_FALSE);
 	spvc_compiler_options_set_bool(options, SPVC_COMPILER_OPTION_GLSL_EMIT_UNIFORM_BUFFER_AS_PLAIN_UNIFORMS, SPVC_TRUE);
+	spvc_compiler_options_set_bool(options, SPVC_COMPILER_OPTION_GLSL_SEPARATE_SHADER_OBJECTS, SPVC_TRUE);
 	spvc_compiler_install_compiler_options(compiler_glsl, options);
 
 	const char *tmp;
@@ -171,6 +202,7 @@ Result<void, const char *>	Shader::compile_source()
 		return Err( "Shader compilation failed" );
 	}
 
+	std::cout << glsl_source << std::endl;
 	this->is_loaded = true;
 	return Ok();
 }

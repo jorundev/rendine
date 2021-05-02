@@ -4,8 +4,14 @@
 #include <iostream>
 
 #include <rendine/Texture.hpp>
-#include <rendine/Shader.hpp>
+#include <rendine/ShaderProgram.hpp>
 #include <rendine/utils/Log.hpp>
+
+float vertices[] = {
+     0.0f,  0.5f, // Vertex 1 (X, Y)
+     0.5f, -0.5f, // Vertex 2 (X, Y)
+    -0.5f, -0.5f  // Vertex 3 (X, Y)
+};
 
 class Program {
 public:
@@ -38,6 +44,11 @@ public:
 
 		LOG_INFO("Successfully created OpenGL context");
 
+		this->initAssets();
+	}
+
+	void initAssets()
+	{
 		auto file = "res/tex/texture.png";
 		auto status = this->texture.loadFromFile(file);
 		if (status.isErr()) {
@@ -48,22 +59,58 @@ public:
 		LOG_INFO("Loaded texture '" << file << '\'');
 
 		file = "res/shaders/vertex.spv";
-		auto status2 = this->vert_shader.loadFromFile(file, rendine::ShaderStage::Vertex);
+		this->vert_shader = std::make_shared<rendine::Shader>();
+		auto status2 = this->vert_shader->loadFromFile(file, rendine::ShaderStage::Vertex);
 		if (status2.isErr()) {
-			/* Error while loading texture */
+			/* Error while loading shader */
 			LOG_ERR('\'' << file << "' -> " << status2.unwrapErr());
 			return ;
 		}
 		LOG_INFO("Loaded shader '" << file << '\'');
 
 		file = "res/shaders/fragment.spv";
-		auto status3 = this->frag_shader.loadFromFile(file, rendine::ShaderStage::Fragment);
+		this->frag_shader = std::make_shared<rendine::Shader>();
+		auto status3 = this->frag_shader->loadFromFile(file, rendine::ShaderStage::Fragment);
 		if (status3.isErr()) {
-			/* Error while loading texture */
+			/* Error while loading shader */
 			LOG_ERR('\'' << file << "' -> " << status3.unwrapErr());
 			return ;
 		}
 		LOG_INFO("Loaded shader '" << file << '\'');
+
+		this->program = std::make_shared<rendine::ShaderProgram>();
+
+		this->program->attachShader(this->vert_shader);
+		this->program->attachShader(this->frag_shader);
+
+		auto status4 = this->program->link();
+		if (status4.isErr()) {
+			/* Error while loading program */
+			LOG_ERR(status4.unwrapErr());
+			return ;
+		}
+		LOG_INFO("Loaded shader program (handle " << this->program->getHandle() << ")");
+
+
+		//////
+
+		glGenVertexArrays(1, &vao);
+		glBindVertexArray(vao);
+
+		glGenBuffers(1, &vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		glEnableVertexAttribArray(0);
+
+		glUseProgram(this->program->getHandle());
+		/*int vertexColorLocation = glGetUniformLocation(this->program->getHandle(), "material.color");
+		glUniform4f(vertexColorLocation, 1.0f, 1.0f, 1.0f, 1.0f);*/
+
+		//////////
 
 		LOG_INFO("Successfully initialized engine");
 		this->is_valid = true;
@@ -76,7 +123,7 @@ public:
 			return (-1);
 		}
 
-		glClearColor(1.f, .0f, .0f, 1.f);
+		glClearColor(.2f, .2f, .2f, 1.f);
 		while (true) {
 			if (!this->loop()) {
 				LOG_INFO("Exiting program (Exit event)");
@@ -106,7 +153,12 @@ public:
 					break;
 			}
 		}
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		glUseProgram(this->program->getHandle());
+		glBindVertexArray(vao);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+
 		return true;
 	}
 
@@ -122,8 +174,10 @@ private:
 	SDL_Window			*window;
 	SDL_GLContext		gl;
 	rendine::Texture	texture;
-	rendine::Shader		frag_shader;
-	rendine::Shader		vert_shader;
+	std::shared_ptr<rendine::Shader>		frag_shader;
+	std::shared_ptr<rendine::Shader>		vert_shader;
+	std::shared_ptr<rendine::ShaderProgram>	program;
+	GLuint	vbo, vao;
 };
 
 int main(void)
