@@ -25,7 +25,7 @@ spvcross = static_library (
 'vendor/SPIRV-Cross/spirv_cross_parsed_ir.cpp',
 'vendor/SPIRV-Cross/spirv_parser.cpp',
 ],
-include_directories: ['vendor/SPIRV-Cross/include'],
+include_directories: ['vendor/SPIRV-Cross', 'vendor/SPIRV-Cross/include'],
 override_options : ['cpp_std=c++11'],
 cpp_args: '-DSPIRV_CROSS_C_API_GLSL',
 )
@@ -37,7 +37,7 @@ spvcross_dep = declare_dependency (
 
 exe = executable (
 	'exe', ['src/main.cpp', 'src/Texture.cpp', 'src/Shader.cpp', 'src/ShaderProgram.cpp'],
-	override_options : ['cpp_std=c++11'],
+	override_options : ['cpp_std=c++17'],
 	include_directories:[include],
 	dependencies:[glad_dep, dependency('SDL2'), dependency('glm'), dependency('libpng'), spvcross_dep]
 )
