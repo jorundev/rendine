@@ -66,7 +66,8 @@ public:
 	virtual void	unload() override;
 	Result<void, const char *> loadFromFile(const char *filename, ShaderStage stage);
 
-	ShaderStage	getStage() const { return this->stage; };
+	ShaderStage	getStage() const { return this->stage; }
+	const char	*getGLSLSource() const { return this->glsl_source; }
 
 	const std::vector<ShaderUniform>& getUniforms() const { return this->material_uniforms; }
 

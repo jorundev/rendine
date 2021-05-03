@@ -119,8 +119,8 @@ Result<void, const char *> Shader::loadFromFile(const char *filename, ShaderStag
 		if (strncmp(list[i].name, "Material", 9) == 0) {
 			spvc_compiler_set_name(compiler_glsl, list[i].id, "material");
 			spvc_type type = spvc_compiler_get_type_handle(compiler_glsl, list[i].base_type_id);
-			this->material_uniforms.resize(spvc_type_get_vector_size(type));
-			spvc_type_id id = spvc_type_get_base_type_id(type);
+			this->material_uniforms.resize(spvc_type_get_num_member_types(type));
+			spvc_type_id id = list[i].base_type_id;
 
 			unsigned int n = 0;
 			while (n < this->material_uniforms.size()) {
@@ -197,12 +197,13 @@ Result<void, const char *>	Shader::compile_source()
 	if(!success)
 	{
 		glGetShaderInfoLog(this->getHandle(), 512, NULL, infoLog);
-		LOG_ERR("\n" << infoLog);
+		LOG_ERR("\n" << infoLog << "Generated GLSL:\n" << glsl_source);
 		this->unload();
 		return Err( "Shader compilation failed" );
 	}
 
 	std::cout << glsl_source << std::endl;
+
 	this->is_loaded = true;
 	return Ok();
 }

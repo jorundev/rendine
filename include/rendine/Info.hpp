@@ -6,7 +6,7 @@
 
 #define RENDINE_VERSION_MAJOR 0
 #define RENDINE_VERSION_MINOR 1
-#define RENDINE_VERSION_PATCH 0
+#define RENDINE_VERSION_PATCH 1
 #define RENDINE_VERSION_STAGE "a"
 
 #define RENDINE_VERSION_STRING_V(major, minor, patch, stage) \
