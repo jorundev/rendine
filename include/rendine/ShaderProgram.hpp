@@ -1,7 +1,6 @@
 #pragma once
 
 #include <unordered_map>
-#include <utility>
 #include "Asset.hpp"
 #include "GLObject.hpp"
 #include "Shader.hpp"
@@ -10,6 +9,13 @@
 #include <glm/glm.hpp>
 
 namespace rendine {
+
+using namespace std;
+
+struct UniformLocationTypePair {
+	GLint			location;
+	ShaderVarType	type;
+};
 
 class ShaderProgram : public Asset, public GLObject {
 public:
@@ -31,7 +37,7 @@ public:
 private:
 	std::shared_ptr<Shader>	vertex_shader;
 	std::shared_ptr<Shader>	fragment_shader;
-	std::unordered_map<std::string, std::pair<GLint, ShaderVarType>> material_uniforms;
+	unordered_map<string, UniformLocationTypePair> material_uniforms;
 
 	void attach(std::shared_ptr<Shader>& shader);
 

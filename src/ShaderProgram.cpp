@@ -85,9 +85,9 @@ Result<void, const char *>	ShaderProgram::link()
 
 	for (const auto& mat_uniform : vert_uniforms) {
 		std::string mat_name = std::string("material.") + mat_uniform.name;
-		this->material_uniforms[mat_uniform.name].first =
+		this->material_uniforms[mat_uniform.name].location =
 			glGetUniformLocation(this->getHandle(), mat_name.c_str());
-		this->material_uniforms[mat_uniform.name].second = mat_uniform.type;
+		this->material_uniforms[mat_uniform.name].type = mat_uniform.type;
 	}
 
 	this->is_loaded = true;
@@ -107,8 +107,8 @@ bool	ShaderProgram::setMaterialUniform(std::string name, glm::vec4 vec)
 		return false;
 	}
 	const auto& uniform = this->material_uniforms[name];
-	if (uniform.second == ShaderVarType::Vec4) {
-		glUniform4f(uniform.first, vec.x, vec.y, vec.z, vec.w);
+	if (uniform.type == ShaderVarType::Vec4) {
+		glUniform4f(uniform.location, vec.x, vec.y, vec.z, vec.w);
 		return true;
 	}
 	return false;
