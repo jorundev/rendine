@@ -4,15 +4,9 @@
 #include <iostream>
 
 #include <rendine/Texture.hpp>
+#include <rendine/meshes/Mesh2D.hpp>
 #include <rendine/ShaderProgram.hpp>
 #include <rendine/utils/Log.hpp>
-
-float vertices[] = {
-    // positions         // colors
-     0.5f, -0.5f,  1.0f, 0.0f, 0.0f,   // bottom right
-    -0.5f, -0.5f,  0.0f, 1.0f, 0.0f,   // bottom left
-     0.0f,  0.5f,  0.0f, 0.0f, 1.0f    // top
-};
 
 class Program {
 public:
@@ -96,7 +90,7 @@ public:
 
 		//////
 
-		glGenVertexArrays(1, &vao);
+		/*glGenVertexArrays(1, &vao);
 		glBindVertexArray(vao);
 
 		glGenBuffers(1, &vbo);
@@ -108,7 +102,14 @@ public:
 		glEnableVertexAttribArray(0);
 
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
-		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray(1);*/
+
+		mesh = std::make_unique<rendine::Mesh2D>();
+
+		mesh->addVertex(glm::vec2(0.5f, -0.5f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f));
+		mesh->addVertex(glm::vec2(-0.5f, -0.5f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f));
+		mesh->addVertex(glm::vec2(0.0f,  0.5f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f));
+		mesh->bake();
 
 		this->program->use();
 
@@ -170,7 +171,8 @@ public:
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		this->program->use();
-		glBindVertexArray(vao);
+		//glBindVertexArray(vao);
+		mesh->bind();
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		return true;
@@ -191,7 +193,8 @@ private:
 	std::shared_ptr<rendine::Shader>		frag_shader;
 	std::shared_ptr<rendine::Shader>		vert_shader;
 	std::shared_ptr<rendine::ShaderProgram>	program;
-	GLuint	vbo, vao;
+
+	std::unique_ptr<rendine::Mesh2D>		mesh;
 };
 
 int main(void)

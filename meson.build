@@ -36,7 +36,13 @@ spvcross_dep = declare_dependency (
 )
 
 exe = executable (
-	'exe', ['src/main.cpp', 'src/Texture.cpp', 'src/Shader.cpp', 'src/ShaderProgram.cpp'],
+	'exe', [	'src/main.cpp',
+				'src/Texture.cpp',
+				'src/Shader.cpp',
+				'src/ShaderProgram.cpp',
+				'src/Mesh.cpp',
+				'src/meshes/Mesh2D.cpp'
+			],
 	override_options : ['cpp_std=c++17'],
 	include_directories:[include],
 	dependencies:[glad_dep, dependency('SDL2'), dependency('glm'), dependency('libpng'), spvcross_dep]
