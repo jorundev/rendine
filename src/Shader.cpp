@@ -1,8 +1,8 @@
 #include <rendine/Shader.hpp>
 #include <rendine/utils/Log.hpp>
 #include <glad/glad.h>
-#include <spirv_cross/spirv_glsl.hpp>
-#include <spirv_cross/spirv_cross_c.h>
+#include <spirv_glsl.hpp>
+#include <spirv_cross_c.h>
 #include <cerrno>
 #include <cstring>
 #include <exception>

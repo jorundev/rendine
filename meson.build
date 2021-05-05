@@ -32,7 +32,7 @@ cpp_args: '-DSPIRV_CROSS_C_API_GLSL',
 
 spvcross_dep = declare_dependency (
 	link_with: spvcross,
-	include_directories: ['vendor/SPIRV-Cross/include']
+	include_directories: ['vendor/SPIRV-Cross', 'vendor/SPIRV-Cross/include']
 )
 
 exe = executable (
