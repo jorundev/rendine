@@ -69,13 +69,15 @@ public:
 	ShaderStage	getStage() const { return this->stage; }
 	const char	*getGLSLSource() const { return this->glsl_source; }
 
-	const std::vector<ShaderUniform>& getUniforms() const { return this->material_uniforms; }
+	const std::vector<ShaderUniform>& getMaterialUniforms() const { return this->material_uniforms; }
+	const std::vector<ShaderUniform>& getCameraUniforms() const { return this->camera_uniforms; }
 
 private:
 	std::string					name;
 	ShaderStage					stage;
 	char						*glsl_source;
 	std::vector<ShaderUniform>	material_uniforms;
+	std::vector<ShaderUniform>	camera_uniforms;
 
 	Result<void, const char *>	compile_source();
 };

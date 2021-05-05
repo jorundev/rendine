@@ -14,8 +14,9 @@ void error_callback(void* data, const char* error)
 
 namespace rendine {
 
-static ShaderVarType sptype_to_shdtype(spvc_basetype type, unsigned int dim)
+static ShaderVarType sptype_to_shdtype(spvc_basetype type, unsigned int dim, unsigned int columns)
 {
+	//todo: incomplete
 	switch (type) {
 		case SPVC_BASETYPE_FP32:
 			switch (dim) {
@@ -26,7 +27,11 @@ static ShaderVarType sptype_to_shdtype(spvc_basetype type, unsigned int dim)
 				case 3:
 					return ShaderVarType::Vec3;
 				case 4:
-					return ShaderVarType::Vec4;
+					if (columns == 1) {
+						return ShaderVarType::Vec4;
+					} else if (columns == 4) {
+						return ShaderVarType::Mat4;
+					}
 				default:
 					return ShaderVarType::Unknown;
 			}
@@ -116,6 +121,7 @@ Result<void, const char *> Shader::loadFromFile(const char *filename, ShaderStag
 
 	for (i = 0; i < count; i++)
 	{
+		//todo: VERY repetitive code
 		if (strncmp(list[i].name, "Material", 9) == 0) {
 			spvc_compiler_set_name(compiler_glsl, list[i].id, "material");
 			spvc_type type = spvc_compiler_get_type_handle(compiler_glsl, list[i].base_type_id);
@@ -128,11 +134,26 @@ Result<void, const char *> Shader::loadFromFile(const char *filename, ShaderStag
 				spvc_type member_type = spvc_compiler_get_type_handle(compiler_glsl, member_type_id);
 				spvc_basetype member_basetype = spvc_type_get_basetype(member_type);
 				unsigned int member_dimension = spvc_type_get_vector_size(member_type);
-				this->material_uniforms[n].name = std::string(spvc_compiler_get_member_name(compiler_glsl, id, n));
-				this->material_uniforms[n].type = sptype_to_shdtype(member_basetype, member_dimension);
+				this->material_uniforms[n].name = std::string("material.") + spvc_compiler_get_member_name(compiler_glsl, id, n);
+				this->material_uniforms[n].type = sptype_to_shdtype(member_basetype, member_dimension, spvc_type_get_columns(member_type));
 				++n;
 			}
-			break ;
+		} else if (strncmp(list[i].name, "Camera", 7) == 0) {
+			spvc_compiler_set_name(compiler_glsl, list[i].id, "camera");
+			spvc_type type = spvc_compiler_get_type_handle(compiler_glsl, list[i].base_type_id);
+			this->camera_uniforms.resize(spvc_type_get_num_member_types(type));
+			spvc_type_id id = list[i].base_type_id;
+
+			unsigned int n = 0;
+			while (n < this->camera_uniforms.size()) {
+				spvc_type_id member_type_id = spvc_type_get_member_type(type, n);
+				spvc_type member_type = spvc_compiler_get_type_handle(compiler_glsl, member_type_id);
+				spvc_basetype member_basetype = spvc_type_get_basetype(member_type);
+				unsigned int member_dimension = spvc_type_get_vector_size(member_type);
+				this->camera_uniforms[n].name = std::string("camera.") + spvc_compiler_get_member_name(compiler_glsl, id, n);
+				this->camera_uniforms[n].type = sptype_to_shdtype(member_basetype, member_dimension, spvc_type_get_columns(member_type));
+				++n;
+			}
 		}
 	}
 
